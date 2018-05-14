@@ -58,12 +58,6 @@ def show_dataset(dataset):
 # scatter plot matrix
     scatter_matrix(dataset)
     plt.show()
-
-if __name__ == "__main__":
-    # check_versions()
-    dataset = load_dataset()
-    # show_dataset(dataset)
-
 # Split-out validation dataset
     array = dataset.values
     X = array[:,0:4]
@@ -104,4 +98,25 @@ if __name__ == "__main__":
         names.append(name)
         msg = "%s: %f (%f)" % (name, cv_results.mean(), cv_results.std())
         print(msg)
+
+    fig = plt.figure()
+    fig.suptitle('Algorithm Comparison')
+    ax = fig.add_subplot(111)
+    plt.boxplot(results)
+    ax.set_xticklabels(names)
+    plt.show()
+
+# Make predictions on validation dataset
+    knn = KNeighborsClassifier()
+    knn.fit(X_train, Y_train)
+    predictions = knn.predict(X_validation)
+    print(accuracy_score(Y_validation, predictions))
+#   print(confusion_matrix(Y_validation, predictions))
+    print(classification_report(Y_validation, predictions))
+
+if __name__ == "__main__":
+    # check_versions()
+    dataset = load_dataset()
+    # show_dataset(dataset)
+
 
