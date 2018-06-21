@@ -72,7 +72,7 @@ def show_dataset(dataset):
 
 # Spot Check Algorithms
     """
-    Let’s evaluate 6 different algorithms:
+    Lets evaluate 6 different algorithms:
 
     Logistic Regression (LR)
     Linear Discriminant Analysis (LDA)
@@ -114,9 +114,10 @@ def show_dataset(dataset):
 #   print(confusion_matrix(Y_validation, predictions))
     print(classification_report(Y_validation, predictions))
 
-if __name__ == "__main__":
+def main():
     # check_versions()
     dataset = load_dataset()
     show_dataset(dataset)
 
-
+if __name__ == "__main__":
+    main()
