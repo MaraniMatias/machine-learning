@@ -109,7 +109,7 @@ with tf.Graph().as_default():
     a_x_b = tf.matmul(reshaped_a,reshaped_b)
 
     with tf.Session() as sess:
-        print(reshaped_a.eval())
+        print reshaped_a.eval()
         print(reshaped_b.eval())
         print(a_x_b.eval())
 

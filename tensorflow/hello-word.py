@@ -7,7 +7,7 @@ with tf.Session() as sess:
 
     print( sess.run(c) )
 
-hello = tf.constant('Hello, TensorFlow!')
-sess = tf.Session()
-print(sess.run(hello))
+    hello = tf.constant('Hello, TensorFlow!')
+    sess = tf.Session()
+    print(sess.run(hello))
 
