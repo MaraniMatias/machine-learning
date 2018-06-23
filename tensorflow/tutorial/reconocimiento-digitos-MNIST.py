@@ -163,3 +163,54 @@ for i in range(pasos):
         print("Precision en el conjunto de validacion: %.1f%%" % precision(
         valid_pred.eval(session=sess), mnist.validation.labels))
         print("\n")
+
+y_test = NN(mnist.test.images)
+test_prediction = tf.nn.softmax(y_test)
+print("Precision en el conjunto de PRUEBA: %.1f%%" % precision(test_prediction.eval(session = sess), mnist.test.labels))
+
+indice = 251
+p = tf.argmax(NN(mnist.test.images[indice:indice+1]).eval(session = sess),1)
+print("Prediccion:", sess.run(p)[0])
+vis_imagen(indice, conjunto="test")
+
+def remove_transparency(im, bg_colour=(255, 255, 255)):
+
+    # Only process if image has transparency
+    if im.mode in ('RGBA', 'LA') or (im.mode == 'P' and 'transparency' in im.info):
+
+        # Need to convert to RGBA if LA format due to a bug in PIL
+        alpha = im.convert('RGBA').split()[-1]
+
+        # Create a new background image of our matt color.
+        # Must be RGBA because paste requires both images have the same format
+
+        bg = Image.new("RGBA", im.size, bg_colour + (255,))
+        bg.paste(im, mask=alpha)
+        return bg
+
+    else:
+        return im
+
+#################################
+#
+# Usa tu propia imagen
+#
+################################
+from PIL import Image
+imagen = "numero2.png"
+img = Image.open(imagen)
+img = remove_transparency(img).convert('L')
+
+if  img.size != (28,28):
+    img.thumbnail((28,28), Image.ANTIALIAS)
+
+entrada = np.array(img, dtype = np.float32)
+entrada = entrada.reshape((1,784))
+entrada = entrada/255.0
+
+p = tf.argmax(NN(entrada).eval(session = sess),1)
+print("Imagen:{}".format(imagen))
+img.show()
+print("Prediccion:", sess.run(p)[0])
+
+
