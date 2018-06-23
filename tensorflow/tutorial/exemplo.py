@@ -8,19 +8,19 @@ print c
 sess = tf.Session()
 print sess.run(c)
 
-### Creacion de la  grafica
-a = tf.placeholder(tf.float32) # Requiere el tipo
+# Creacion de la  grafica
+a = tf.placeholder(tf.float32)  # Requiere el tipo
 b = tf.placeholder(tf.float32)
-c = a+ b
+c = a + b
 print(c)
 
-print(sess.run(c,{a:[1,2],b:[2,3]}))
+print(sess.run(c, {a: [1, 2], b: [2, 3]}))
 
 # Variable
-W = tf.Variable([.3],tf.float32) #Necesita un valor, y el tipo
-b = tf.Variable([-.3],tf.float32)
+W = tf.Variable([.3], tf.float32)  # Necesita un valor, y el tipo
+b = tf.Variable([-.3], tf.float32)
 x = tf.placeholder(tf.float32)
-modelo_lineal = W*x +b
+modelo_lineal = W*x + b
 
 #
 # Inicializacion
@@ -40,31 +40,31 @@ diferencia_sqr = (modelo_lineal - y)**2
 
 costo = tf.reduce_sum(diferencia_sqr)
 
-print(sess.run(costo,{x:[1,2,3,4],y: [0,-1,-2,-3]}))
+print(sess.run(costo, {x: [1, 2, 3, 4], y: [0, -1, -2, -3]}))
 
-W_ = tf.assign(W,[-1.0])
-b_ = tf.assign(b,[1.0])
+W_ = tf.assign(W, [-1.0])
+b_ = tf.assign(b, [1.0])
 
-sess.run([W_,b_])
-print(sess.run(costo,{x:[1,2,3,4],y: [0,-1,-2,-3]} ))
+sess.run([W_, b_])
+print(sess.run(costo, {x: [1, 2, 3, 4], y: [0, -1, -2, -3]}))
 
 #
 # Optimizadores
 #
-opt = tf.train.GradientDescentOptimizer(learning_rate = 0.01)
+opt = tf.train.GradientDescentOptimizer(learning_rate=0.01)
 train = opt.minimize(costo)
 
-sess.run(init) # resetea las variables a su valor original
+sess.run(init)  # resetea las variables a su valor original
 
-### Entrenamiento
+# Entrenamiento
 for i in range(1000):
-    sess.run(train,{x:[1, 2, 3, 4], y:[0, -1, -2, -3]})
+    sess.run(train, {x: [1, 2, 3, 4], y: [0, -1, -2, -3]})
 
-print(sess.run([W,b]))
+print(sess.run([W, b]))
 
-print(sess.run(costo,{x:[1,2,3,4],y: [0,-1,-2,-3]}))
+print(sess.run(costo, {x: [1, 2, 3, 4], y: [0, -1, -2, -3]}))
 
-print(sess.run([W,b]))
+print(sess.run([W, b]))
 
 #
 # Resumen
@@ -81,7 +81,7 @@ modelo_lineal = W*x + b
 y = tf.placeholder(tf.float32)
 
 # Funcion de costo
-loss = tf.reduce_sum(tf.square(modelo_lineal - y)) # sum of the squares
+loss = tf.reduce_sum(tf.square(modelo_lineal - y))  # sum of the squares
 
 # Optimizador
 optimizer = tf.train.GradientDescentOptimizer(0.01)
@@ -96,9 +96,8 @@ init = tf.global_variables_initializer()
 sess = tf.Session()
 sess.run(init)
 for i in range(1000):
-  sess.run(train, {x: x_train, y: y_train})
+    sess.run(train, {x: x_train, y: y_train})
 
-#Precision
+# Precision
 curr_W, curr_b, curr_loss = sess.run([W, b, loss], {x: x_train, y: y_train})
-print("W: %s b: %s loss: %s"%(curr_W, curr_b, curr_loss))
-
+print("W: %s b: %s loss: %s" % (curr_W, curr_b, curr_loss))
