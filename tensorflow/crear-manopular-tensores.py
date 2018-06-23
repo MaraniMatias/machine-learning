@@ -110,9 +110,9 @@ with tf.Graph().as_default():
 
     with tf.Session() as sess:
         print reshaped_a.eval()
-        print(reshaped_b.eval())
-        print(a_x_b.eval())
-
+        print reshaped_b.eval()
+        print a_x_b.eval()
 #
 #  Variables, Inicializacion y asignacion
 #
+
