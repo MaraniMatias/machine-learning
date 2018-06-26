@@ -112,9 +112,9 @@ with tf.Graph().as_default():
     a_x_b = tf.matmul(reshaped_a, reshaped_b)
 
     with tf.Session() as sess:
-        print reshaped_a.eval()
-        print reshaped_b.eval()
-        print a_x_b.eval()
+        print(reshaped_a.eval())
+        print(reshaped_b.eval())
+        print(a_x_b.eval())
 #
 #  Variables, Inicializacion y asignacion
 #
@@ -132,7 +132,7 @@ with g.as_default():
         try:
             v.eval()
         except tf.errors.FailedPreconditionError as e:
-            print "Caught expected error: ", e
+            print("Caught expected error: ", e)
 
 
 with g.as_default():
@@ -140,31 +140,31 @@ with g.as_default():
         initialization = tf.global_variables_initializer()
         sess.run(initialization)
         # Now, variables can be accessed normally, and have values assigned to them.
-        print v.eval()
-        print w.eval()
+        print(v.eval())
+        print(w.eval())
 
 with g.as_default():
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
         # These three prints will print the same value.
-        print w.eval()
-        print w.eval()
-        print w.eval()
+        print(w.eval())
+        print(w.eval())
+        print(w.eval())
 
 with g.as_default():
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
         # This should print the variable's initial value.
-        print v.eval()
+        print(v.eval())
 
         assignment = tf.assign(v, [7])
         # The variable has not been changed yet!
-        print v.eval()
+        print(v.eval())
 
         # Execute the assignment op.
         sess.run(assignment)
         # Now the variable is updated.
-        print v.eval()
+        print(v.eval())
 
 # ### Ejercicio n.º 2: Simula 10 giros de dos dados.
 #
