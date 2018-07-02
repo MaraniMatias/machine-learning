@@ -1,3 +1,4 @@
+import multiprocessing
 import tensorflow as tf
 import numpy as np
 
@@ -7,7 +8,6 @@ from tensorflow.examples.tutorials.mnist import input_data
 mnist = input_data.read_data_sets('MNIST_data', one_hot=True)
 
 import matplotlib.pyplot as plt
-import time
 
 # Los Ejemplos de entrenamiento estan en:
 # mnist.train.images
@@ -75,11 +75,13 @@ def vis_imagen(i, conjunto="train"):
     print("Etiqueta " + str(label))
     return
 
-
-vis_imagen(0, conjunto="train")
-vis_imagen(132, conjunto="validation")
-vis_imagen(32, conjunto="test")
-vis_imagen(50000, conjunto="train")
+#
+# Para ver las imagenes
+#
+#vis_imagen(0, conjunto="train")
+#vis_imagen(132, conjunto="validation")
+#vis_imagen(32, conjunto="test")
+#vis_imagen(50000, conjunto="train")
 
 #
 #  RED NEURONAL
@@ -88,6 +90,7 @@ vis_imagen(50000, conjunto="train")
 # Placeholders para los datos de entrenamiento
 # En ellos se pasaran despues los datos de entrenamiento (x,y)
 # x imagen, y etiqueta
+
 
 x = tf.placeholder(tf.float32, shape=[None, 784])
 y = tf.placeholder(tf.float32, shape=[None, 10])
@@ -147,7 +150,20 @@ opt = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
 
 # Sesion e inicializacion de varables
 
-sess = tf.Session()  # Crea una session
+# ###############################
+#
+# Configuracion para multi corel
+#
+# ###############################
+CPUs = multiprocessing.cpu_count()
+config = tf.ConfigProto(device_count={"CPU": CPUs},
+                        inter_op_parallelism_threads=1,
+                        intra_op_parallelism_threads=1)
+sess = tf.Session(config=config)
+print("CPUs", CPUs)
+# ##############################
+
+# sess = tf.Session()  # Crea una session
 sess.run(tf.global_variables_initializer())
 
 # Precision
