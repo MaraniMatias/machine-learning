@@ -138,9 +138,9 @@ if __name__ == "__main__":
             for q in range(10):
                 evalue = tf.gather(display, q)
                 real = tf.gather(trainData, q).eval()
-                print("Evaluar:", evalue.eval(), "Valor real:", real)
                 n = tf.reduce_sum(tf.multiply(W, tf.gather(display, q)))
-                print('Ok' if funEsclon(n.eval() + b) == real else 'Error')
+                print("Evaluar:", evalue.eval(), "Valor real:", real,
+                      'Ok' if funEsclon(n.eval() + b) == real else 'Error')
 
         except tf.errors.FailedPreconditionError as errorTry:
             print("Caught expected error: ", errorTry)
