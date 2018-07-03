@@ -64,7 +64,6 @@ def funEsclon(x):
     return 0 if x < 0 else 1
 
 
-#
 # Para comprobar resultados
 #
 def test(W, b, trainData):
@@ -73,9 +72,8 @@ def test(W, b, trainData):
 
 if __name__ == "__main__":
 
-    #
     # Session and Variable Initialization
-    # Start sesión del TF
+    #
     with tf.Session(config=config) as sess:
         try:
             # Valores a buscar
@@ -84,9 +82,10 @@ if __name__ == "__main__":
             W = tf.Variable(tf.random_uniform([7]), name="Weight")
             # - Peso sináptico
             # b = tf.random_uniform(shape=[1], name="Synaptic_weight")
+            # b = random.uniform(-1, 1)
             b = random.random()
-            # - Error
-            # e = tf.zeros(1)
+            # Epocas
+            epocas = 10
 
             # Comenzar :D
             #
@@ -98,16 +97,15 @@ if __name__ == "__main__":
             print(t_par.name, '\n', t_par.eval())
 
             trainData = t_par
-            # trainData = t_may5
-            # trainData = t_primo
+            # trainData = t_may5  # Me dio error
+            # trainData = t_primo # Me dio error
 
-            #
             # Entrenar Neurona
             #
             # tf.multiply vs tf.matmul to calculate the dot product
             # https://stackoverflow.com/questions/47583501/tf-multiply-vs-tf-matmul-to-calculate-the-dot-product
             print("Entrenando...")
-            for epoca in range(10):
+            for epoca in range(epocas):
                 for q in range(10):
                     # print('>>', W.eval(), 'd', tf.gather(display, 0).eval())
                     n = tf.multiply(W, tf.gather(display, q))
@@ -116,7 +114,7 @@ if __name__ == "__main__":
                     # print(sum_n.eval())
                     sum_n_b = sum_n.eval() + b  # Combinacion lineal
                     # print(sum_n_b)
-                    e = tf.gather(trainData, q) - funEsclon(sum_n_b)
+                    e = tf.gather(trainData, q) - funEsclon(sum_n_b)  # Error
                     # print('e', e.eval())
                     # print(tf.multiply(e, tf.gather(display, q)).eval())
                     W = W + tf.multiply(e, tf.gather(display, q))
@@ -129,7 +127,6 @@ if __name__ == "__main__":
             print('b', b)
             print('e', e.eval())
 
-            #
             # Comprobar
             #
             # Tiene que dar 1 en caso de ser Par.
