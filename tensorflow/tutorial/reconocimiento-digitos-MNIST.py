@@ -105,9 +105,8 @@ b_1 = tf.Variable(tf.zeros([512]))
 W_2 = tf.Variable(tf.truncated_normal(shape=[512, 10], stddev=0.2))
 b_2 = tf.Variable(tf.zeros([10]))
 
+
 # Arquitectura de la red neural
-
-
 def NN(x):
     """
         x: matriz
@@ -125,15 +124,14 @@ def NN(x):
 
     return z_2
 
+
 # Funcion de costo
-
-
 y_ = NN(x)
 cross_entropy = tf.reduce_mean(
     tf.nn.softmax_cross_entropy_with_logits(logits=y_, labels=y))
 
-# Predicciones
 
+# Predicciones
 train_pred = tf.nn.softmax(y_)  # predicciones en el conjunto de entrenamiento
 # Nota: la funcion softmax calcula la probabilidad de cada etiqueta del 0 al 9.
 # Para obtener la prediccion necesitamos usar las funcion tf.argmax(y_,1) o su version en python np.argmax(y_,1)
@@ -166,16 +164,15 @@ print("CPUs", CPUs)
 # sess = tf.Session()  # Crea una session
 sess.run(tf.global_variables_initializer())
 
+
 # Precision
-
-
 def precision(predicciones, etiquetas):
     return (100.0 * np.sum(np.argmax(predicciones, 1) == np.argmax(etiquetas, 1))
             / predicciones.shape[0])
 
+
+
 # Entrenamiento
-
-
 pasos = 5000
 
 print("Entrenamiento:")
