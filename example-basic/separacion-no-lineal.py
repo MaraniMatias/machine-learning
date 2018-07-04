@@ -43,7 +43,7 @@ b2 = random.random()
 
 # Espesificar el alfa
 ALFA = 0.01
-EPOCAS = 1
+EPOCAS = 10
 
 
 if __name__ == "__main__":
@@ -59,7 +59,6 @@ if __name__ == "__main__":
         print("Entrenando...")
         # No usar logsig es muy lento, mejor sigmoid
         for epoca in range(EPOCAS):
-            print('Epoca:', epoca + 1, '/', EPOCAS)
             sumError = 0
             for i in range(Q):
                 q = random.randint(0, Q-1)
@@ -68,7 +67,7 @@ if __name__ == "__main__":
                 n_for_a1 = tf.multiply(W1, tf.gather(inputArray, q))
                 a1 = tf.sigmoid(n_for_a1 + b1, name="a_1")
 
-                print(epoca+1, ': W2', W2.eval())
+                # print(epoca+1, ': W2', W2.eval())
                 n_for_a2 = tf.matmul(tf.reshape(W2, [1, n1]), a1)
                 a2 = tf.sigmoid(tf.gather(n_for_a2 + b2, 0), name="a_2")
 
@@ -77,12 +76,9 @@ if __name__ == "__main__":
 
                 # s2 = -2*diag((1-a2^2))*e;
                 diag2 = -2 * tf.matrix_diag(1 - tf.pow(a2, 2))
-                print('diag2', diag2.eval())
                 s2 = tf.matmul(diag2, tf.reshape(e, [2, 1]), name='sensivilidad_2')
-                print('s2', s2.eval())
                 s2 = tf.matrix_diag(
                     tf.concat([tf.gather(s2, 0), tf.gather(s2, 1)], 0), name='sensivilidad_2')
-                print('s2', s2.eval())
 
                 # s1 = diag((1-a1.^2))*W2'*s2;
                 diag1 = tf.gather(1-tf.pow(a1, 2), 1)
@@ -91,8 +87,10 @@ if __name__ == "__main__":
 
                 # Actualización de pesos sinapticos y polarizaciones
                 # W2 = W2 - alfa*s2*a1';
-                W2 = W2 - tf.matmul(tf.multiply(s2, ALFA), tf.reshape(a1, [2, n1]))
-                print(epoca+1, ': W2', W2.eval())
+                # W2 = W2 - tf.matmul(tf.multiply(s2, ALFA), tf.reshape(a1, [2, n1]))
+                W2 = W2 - tf.matmul(
+                    tf.reshape(tf.multiply(tf.matrix_diag_part(s2), ALFA), [1, 2]),
+                    tf.reshape(a1, [2, n1]))
                 # b2 = b2 - alfa*s2;
                 b2 = b2 - tf.reduce_sum(ALFA*s2)
                 # W1 = W1 - alfa*s1*P(:,q)';
@@ -104,4 +102,4 @@ if __name__ == "__main__":
                 sumError = tf.reduce_sum(tf.pow(e, 2)) + sumError
             # Error cuadratico medio
             err = sumError/Q
-            print("Error medio", err.eval())
+            print('Epoca:', epoca + 1, '/', EPOCAS, "Error medio", err.eval())
