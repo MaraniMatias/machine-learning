@@ -64,16 +64,11 @@ def funEsclon(x):
     return 0 if x < 0 else 1
 
 
-# Para comprobar resultados
-#
-def test(W, b, trainData):
-    print(tf.gather(display, 2).eval())
-
-
 if __name__ == "__main__":
 
     # Session and Variable Initialization
     #
+    # with tf.Session() as sess:
     with tf.Session(config=config) as sess:
         try:
             # Valores a buscar
@@ -96,9 +91,9 @@ if __name__ == "__main__":
             # print("Elementos en display:", tf.size(display).eval())
             print(t_par.name, '\n', t_par.eval())
 
-            trainData = t_par
-            # trainData = t_may5  # Me dio error
-            # trainData = t_primo # Me dio error
+            trainData = t_par     # Con 10 epocas OK
+            # trainData = t_may5      # Con 200 epocas OK
+            # trainData = t_primo   # Con 100 epocas OK
 
             # Entrenar Neurona
             #
