@@ -59,38 +59,49 @@ if __name__ == "__main__":
         print("Entrenando...")
         # No usar logsig es muy lento, mejor sigmoid
         for epoca in range(EPOCAS):
+            print('Epoca:', epoca + 1, '/', EPOCAS)
             sumError = 0
-            for i in [1]:  # range(Q):
+            for i in range(Q):
                 q = random.randint(0, Q-1)
 
                 # Propagación de la entrada hacia la salida
                 n_for_a1 = tf.multiply(W1, tf.gather(inputArray, q))
                 a1 = tf.sigmoid(n_for_a1 + b1, name="a_1")
 
-                n_for_a2 = tf.matmul(tf.reshape(W2, [1, 20]), a1)
+                print(epoca+1, ': W2', W2.eval())
+                n_for_a2 = tf.matmul(tf.reshape(W2, [1, n1]), a1)
                 a2 = tf.sigmoid(tf.gather(n_for_a2 + b2, 0), name="a_2")
 
                 # Retropropagación de la sensibilidades
-                e = tf.gather(trainData, q) - a2
-                # s2 = -2*diag((1-a2^2))*e;
-                diag2 = tf.reshape(1 - tf.matmul(tf.reshape(a2, [1, 2]),
-                                                 tf.reshape(a2, [2, 1])), [1])
-                diag2 = tf.matrix_diag(tf.concat([diag2, diag2], 0))
-                s2 = -2 * tf.matmul(diag2, tf.reshape(e, [2, 1]), name='sensivilidad_2')
-                # s1 = diag((1-a1.^2))*W2'*s2;
+                e = tf.gather(trainData, q) - a2  # OK
 
-                # print(s2.eval())
+                # s2 = -2*diag((1-a2^2))*e;
+                diag2 = -2 * tf.matrix_diag(1 - tf.pow(a2, 2))
+                print('diag2', diag2.eval())
+                s2 = tf.matmul(diag2, tf.reshape(e, [2, 1]), name='sensivilidad_2')
+                print('s2', s2.eval())
+                s2 = tf.matrix_diag(
+                    tf.concat([tf.gather(s2, 0), tf.gather(s2, 1)], 0), name='sensivilidad_2')
+                print('s2', s2.eval())
+
+                # s1 = diag((1-a1.^2))*W2'*s2;
+                diag1 = tf.gather(1-tf.pow(a1, 2), 1)
+                diag1 = tf.multiply(tf.reshape(diag1, [2, 1]), tf.reshape(W2, [1, n1]))
+                s1 = tf.matmul(tf.reshape(diag1, [n1, 2]), s2, name='sensivilidad_1')
 
                 # Actualización de pesos sinapticos y polarizaciones
                 # W2 = W2 - alfa*s2*a1';
+                W2 = W2 - tf.matmul(tf.multiply(s2, ALFA), tf.reshape(a1, [2, n1]))
+                print(epoca+1, ': W2', W2.eval())
                 # b2 = b2 - alfa*s2;
+                b2 = b2 - tf.reduce_sum(ALFA*s2)
                 # W1 = W1 - alfa*s1*P(:,q)';
+                W1 = W1 - ALFA * s1 * tf.gather(trainData, q)
                 # b1 = b1 - alfa*s1;
+                b1 = b1 - ALFA * s1
 
                 # Sumando el error cuadratico
-                err = tf.gather(tf.matmul(tf.reshape(
-                    e, [1, 2]), tf.reshape(e, [2, 1])), 0)
-                sumError = err + sumError
+                sumError = tf.reduce_sum(tf.pow(e, 2)) + sumError
             # Error cuadratico medio
             err = sumError/Q
             print("Error medio", err.eval())
