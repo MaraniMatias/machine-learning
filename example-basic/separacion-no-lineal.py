@@ -72,9 +72,14 @@ if __name__ == "__main__":
 
                 # Retropropagación de la sensibilidades
                 e = tf.gather(trainData, q) - a2
-                print(a2.eval())
                 # s2 = -2*diag((1-a2^2))*e;
+                diag2 = tf.reshape(1 - tf.matmul(tf.reshape(a2, [1, 2]),
+                                                 tf.reshape(a2, [2, 1])), [1])
+                diag2 = tf.matrix_diag(tf.concat([diag2, diag2], 0))
+                s2 = -2 * tf.matmul(diag2, tf.reshape(e, [2, 1]), name='sensivilidad_2')
                 # s1 = diag((1-a1.^2))*W2'*s2;
+
+                # print(s2.eval())
 
                 # Actualización de pesos sinapticos y polarizaciones
                 # W2 = W2 - alfa*s2*a1';
@@ -83,6 +88,9 @@ if __name__ == "__main__":
                 # b1 = b1 - alfa*s1;
 
                 # Sumando el error cuadratico
-                # sumError = e^2 + sumError;
+                err = tf.gather(tf.matmul(tf.reshape(
+                    e, [1, 2]), tf.reshape(e, [2, 1])), 0)
+                sumError = err + sumError
             # Error cuadratico medio
-            # emedio(Epocas) = sum/Q
+            err = sumError/Q
+            print("Error medio", err.eval())
