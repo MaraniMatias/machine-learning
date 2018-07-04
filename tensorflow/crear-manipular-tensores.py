@@ -210,3 +210,13 @@ with tf.Graph().as_default(), tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
 
     print(resulting_matrix.eval())
+
+
+with tf.Session() as sess:
+    a = tf.constant([1, 2, 3, 4, 5, 6])
+    b = tf.constant([7, 8, 9, 10, 11, 12, 1, 2, 3,  1, 1, 3], shape=[6, 2])
+    a = tf.reshape(a, [1, 6])
+    c = tf.matmul(a, b)
+    print(a.eval())
+    print(b.eval())
+    print(c.eval())
