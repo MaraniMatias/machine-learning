@@ -20,8 +20,8 @@ fileArray = scipy.io.loadmat(fileName).get('P')
 inputArray = tf.concat([fileArray[0], fileArray[1]], 0, name="input_data")
 
 # Array de entrenamiento para Azul 1 y para Rojo -1
-trainAzul = tf.zeros([100])
-trainRojo = tf.zeros([100]) + -1
+trainAzul = tf.zeros([100], dtype=tf.float64)
+trainRojo = tf.zeros([100], dtype=tf.float64) + -1
 trainData = tf.concat([trainAzul, trainRojo], 0, name="train_data")
 
 # Num Total de ejemplos
@@ -71,7 +71,8 @@ if __name__ == "__main__":
                 a2 = tf.sigmoid(tf.gather(n_for_a2 + b2, 0), name="a_2")
 
                 # Retropropagación de la sensibilidades
-                # e = T(q)-a2;
+                e = tf.gather(trainData, q) - a2
+                print(a2.eval())
                 # s2 = -2*diag((1-a2^2))*e;
                 # s1 = diag((1-a1.^2))*W2'*s2;
 
