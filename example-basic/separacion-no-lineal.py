@@ -7,9 +7,9 @@ print("TensorFalow", tf.__version__)
 
 # Configurar TensorFlow para usar todos los CPUs de la PC
 CPUs = multiprocessing.cpu_count()
-config = tf.ConfigProto(device_count={"CPU": CPUs},
-                        inter_op_parallelism_threads=1,
-                        intra_op_parallelism_threads=1)
+config = tf.ConfigProto(device_count={"CPU": CPUs, 'GPU': 0},
+                        # log_device_placement=True,
+                        intra_op_parallelism_threads=8)
 
 # Leer archivo con extencion mat
 fileName = "./Clasificacion100.mat"
@@ -43,7 +43,7 @@ b2 = random.random()
 
 # Espesificar el alfa
 ALFA = 0.01
-EPOCAS = 10
+EPOCAS = 100
 
 
 if __name__ == "__main__":
