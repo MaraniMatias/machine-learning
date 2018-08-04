@@ -3,12 +3,11 @@
 
 # import the necessary packages
 from sklearn.preprocessing import LabelBinarizer
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
+import tensorflow.examples.tutorials.mnist.input_data as input_data
 from keras.models import Sequential
 from keras.layers.core import Dense
 from keras.optimizers import SGD
-from sklearn import datasets
 import matplotlib.pyplot as plt
 import numpy as np
 import argparse
@@ -19,16 +18,20 @@ ap.add_argument(
     "-o", "--output", required=True, help="path to the output loss/accuracy plot\n--output output/keras_mnist.png"
 )
 args = vars(ap.parse_args())
+if not os.path.exists(os.path.join(__location__, "output")):
+    os.makedirs(os.path.join(__location__, "output``"))
 
 # grab the MNIST dataset (if this is your first time running this
 # script, the download may take a minute -- the 55MB MNIST dataset
 # will be downloaded)
 print("[INFO] loading MNIST (full) dataset...")
-dataset = datasets.fetch_mldata("mnist-original")
+dataset = input_data.read_data_sets("MNIST")
 # scale the raw pixel intensities to the range [0, 1.0], then
 # construct the training and testing splits
-data = dataset.data.astype("float") / 255.0
-(trainX, testX, trainY, testY) = train_test_split(data, dataset.target, test_size=0.25)
+trainX = dataset.train.images
+testX = dataset.test.images
+trainY = dataset.train.labels
+testY = dataset.test.labels
 
 # convert the labels from integers to vectors
 lb = LabelBinarizer()
