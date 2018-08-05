@@ -11,6 +11,7 @@ from keras.optimizers import SGD
 import matplotlib.pyplot as plt
 import numpy as np
 import argparse
+import os
 
 # construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
@@ -18,6 +19,8 @@ ap.add_argument(
     "-o", "--output", required=True, help="path to the output loss/accuracy plot\n--output output/keras_mnist.png"
 )
 args = vars(ap.parse_args())
+
+__location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 if not os.path.exists(os.path.join(__location__, "output")):
     os.makedirs(os.path.join(__location__, "output``"))
 
