@@ -12,7 +12,7 @@ from keras.layers.convolutional import MaxPooling2D, Conv2D
 from keras.layers.normalization import BatchNormalization
 from keras.layers.core import Dense, Activation, Flatten, Dropout
 from keras.models import Sequential
-from keras.optimizers import SGD
+from keras.optimizers import SGD, Adam
 
 # set the matplotlib backend so figures can be saved in the background
 import matplotlib
@@ -101,7 +101,8 @@ labelNames = ["airplane",    "automobile",    "bird",    "cat",
 
 # initialize the optimizer and model
 print("[INFO] compiling model...")
-opt = SGD(lr=0.01, decay=0.01 / 40, momentum=0.9, nesterov=True)
+# opt = SGD(lr=0.01, decay=0.01 / 40, momentum=0.9, nesterov=True)
+opt = Adam(lr=0.001, amsgrad=True)
 model = MiniVGGNet.build(width=32, height=32, depth=3, classes=10)
 model.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
 # train the network
