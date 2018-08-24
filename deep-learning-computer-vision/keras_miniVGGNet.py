@@ -6,11 +6,12 @@ python3 keras.py --output output/keras_miniVGG.png
 from sklearn.preprocessing import LabelBinarizer
 from sklearn.metrics import classification_report
 
+from keras.callbacks import LearningRateScheduler
 from keras.datasets import cifar10
 from keras import backend as K
 from keras.layers.convolutional import MaxPooling2D, Conv2D
-from keras.layers.normalization import BatchNormalization
 from keras.layers.core import Dense, Activation, Flatten, Dropout
+from keras.layers.normalization import BatchNormalization
 from keras.models import Sequential
 from keras.optimizers import SGD, Adam
 
@@ -35,6 +36,19 @@ if not os.path.exists(os.path.join(__location__, "output")):
     os.makedirs(os.path.join(__location__, "output``"))
 
 
+def step_decay(epoch):
+    # initialize the base initial learning rate, drop factor, and
+    # epochs to drop every
+    initAlpha = 0.01
+    factor = 0.25
+    # factor = 0.5
+    dropEvery = 5
+    # compute learning rate for the current epoch
+    alpha = initAlpha * (factor ** np.floor((1 + epoch) / dropEvery))
+    # return the learning rate
+    return float(alpha)
+
+
 class MiniVGGNet:
     @staticmethod
     def build(width, height, depth, classes):
@@ -53,32 +67,27 @@ class MiniVGGNet:
         model.add(Conv2D(32, (3, 3), padding="same", input_shape=inputShape))
         model.add(Activation("relu"))
         model.add(BatchNormalization(axis=chanDim))
-        model.add(Conv2D(32, (3, 3), padding="same"))
-        model.add(Activation("relu"))
+        model.add(Conv2D(32, (3, 3), padding="same", activation="relu"))
         model.add(BatchNormalization(axis=chanDim))
         model.add(MaxPooling2D(pool_size=(2, 2)))
         model.add(Dropout(0.25))
 
         # second CONV => RELU => CONV => RELU => POOL layer set
-        model.add(Conv2D(64, (3, 3), padding="same"))
-        model.add(Activation("relu"))
+        model.add(Conv2D(64, (3, 3), padding="same", activation="relu"))
         model.add(BatchNormalization(axis=chanDim))
-        model.add(Conv2D(64, (3, 3), padding="same"))
-        model.add(Activation("relu"))
+        model.add(Conv2D(64, (3, 3), padding="same", activation="relu"))
         model.add(BatchNormalization(axis=chanDim))
         model.add(MaxPooling2D(pool_size=(2, 2)))
         model.add(Dropout(0.25))
 
         # first (and only) set of FC => RELU layers
         model.add(Flatten())
-        model.add(Dense(512))
-        model.add(Activation("relu"))
+        model.add(Dense(512, activation="relu"))
         model.add(BatchNormalization())
         model.add(Dropout(0.5))
 
         # softmax classifier
-        model.add(Dense(classes))
-        model.add(Activation("softmax"))
+        model.add(Dense(classes, activation="softmax"))
 
         # return the constructed network architecture
         return model
@@ -96,27 +105,47 @@ lb = LabelBinarizer()
 trainY = lb.fit_transform(trainY)
 testY = lb.transform(testY)
 # initialize the label names for the CIFAR-10 dataset
-labelNames = ["airplane",    "automobile",    "bird",    "cat",
-              "deer",    "dog",    "frog",    "horse",    "ship",    "truck", ]
+labelNames = [
+    "airplane",
+    "automobile",
+    "bird",
+    "cat",
+    "deer",
+    "dog",
+    "frog",
+    "horse",
+    "ship",
+    "truck",
+]
 
 # initialize the optimizer and model
 print("[INFO] compiling model...")
-# opt = SGD(lr=0.01, decay=0.01 / 40, momentum=0.9, nesterov=True)
-opt = Adam(lr=0.001, amsgrad=True)
+# define the set of callbacks to be passed to the model during training
+callbacks = [LearningRateScheduler(step_decay)]
+opt = SGD(lr=0.01, decay=0.01 / 40, momentum=0.9, nesterov=True)
+# opt = Adam(lr=0.001, amsgrad=True)
+
 model = MiniVGGNet.build(width=32, height=32, depth=3, classes=10)
 model.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
 # train the network
 print("[INFO] training network...")
-H = model.fit(trainX, trainY, validation_data=(
-    testX, testY), batch_size=64, epochs=40, verbose=1)
+H = model.fit(
+    trainX,
+    trainY,
+    validation_data=(testX, testY),
+    batch_size=64,
+    epochs=40,
+    verbose=1,
+    callbacks=callbacks
+)
 # evaluate the network
 print("[INFO] evaluating network...")
 predictions = model.predict(testX, batch_size=64)
-print(classification_report(
-    testY.argmax(axis=1),
-    predictions.argmax(axis=1),
-    target_names=labelNames
-))
+print(
+    classification_report(
+        testY.argmax(axis=1), predictions.argmax(axis=1), target_names=labelNames
+    )
+)
 # plot the training loss and accuracy
 plt.style.use("ggplot")
 plt.figure()
