@@ -14,6 +14,7 @@ from keras.layers.core import Dense, Activation, Flatten, Dropout
 from keras.layers.normalization import BatchNormalization
 from keras.models import Sequential
 from keras.optimizers import SGD, Adam
+from trainingmonitor import TrainingMonitor
 
 # set the matplotlib backend so figures can be saved in the background
 import matplotlib
@@ -30,6 +31,9 @@ ap.add_argument(
     "-o", "--output", required=True, help="path to the output loss/accuracy plot"
 )
 args = vars(ap.parse_args())
+
+# show information on the process ID
+print("[INFO process ID: {}".format(os.getpid()))
 
 __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 if not os.path.exists(os.path.join(__location__, "output")):
@@ -95,15 +99,15 @@ class MiniVGGNet:
 
 # load the training and testing data, then scale it into the range [0, 1]
 print("[INFO] loading CIFAR-10 data...")
-
 ((trainX, trainY), (testX, testY)) = cifar10.load_data()
-
 trainX = trainX.astype("float") / 255.0
 testX = testX.astype("float") / 255.0
+
 # convert the labels from integers to vectors
 lb = LabelBinarizer()
 trainY = lb.fit_transform(trainY)
 testY = lb.transform(testY)
+
 # initialize the label names for the CIFAR-10 dataset
 labelNames = [
     "airplane",
@@ -120,13 +124,19 @@ labelNames = [
 
 # initialize the optimizer and model
 print("[INFO] compiling model...")
+figPath = os.path.sep.join([args["output"], "{}.png".format(os.getpid())])
+jsonPath = os.path.sep.join([args["output"], "{}.json".format(os.getpid())])
 # define the set of callbacks to be passed to the model during training
-callbacks = [LearningRateScheduler(step_decay)]
+callbacks = [
+    TrainingMonitor(figPath, jsonPath=jsonPath),
+    LearningRateScheduler(step_decay)
+]
 opt = SGD(lr=0.01, decay=0.01 / 40, momentum=0.9, nesterov=True)
 # opt = Adam(lr=0.001, amsgrad=True)
 
 model = MiniVGGNet.build(width=32, height=32, depth=3, classes=10)
 model.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
+
 # train the network
 print("[INFO] training network...")
 H = model.fit(
