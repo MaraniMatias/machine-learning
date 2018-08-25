@@ -30,7 +30,7 @@ __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file
 if not os.path.exists(os.path.join(__location__, "output")):
     os.makedirs(os.path.join(__location__, "output"))
 if not os.path.exists(os.path.join(__location__, "weights")):
-    os.makedirs(os.path.join(__location__, "weigths"))
+    os.makedirs(os.path.join(__location__, "weights"))
 
 
 def step_decay(epoch):
@@ -137,7 +137,11 @@ opt = SGD(lr=0.01, decay=0.01 / 40, momentum=0.9, nesterov=True)
 model = MiniVGGNet.build(width=32, height=32, depth=3, classes=10)
 model.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
 # save image of build model
-plot_model(model, to_file="model.png", show_shapes=True)
+plot_model(
+    model,
+    to_file=os.path.join(__location__, "output", "model.png"),
+    show_shapes=True
+)
 
 # train the network
 print("[INFO] training network...")
