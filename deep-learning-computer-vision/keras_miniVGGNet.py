@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-python3 keras.py --output output/keras_miniVGG.png
+python3 keras.py
 """
 # import the necessary packages
 from sklearn.preprocessing import LabelBinarizer
@@ -16,29 +16,21 @@ from keras.models import Sequential
 from keras.utils import plot_model
 from keras.optimizers import SGD, Adam
 from trainingmonitor import TrainingMonitor
-
-# set the matplotlib backend so figures can be saved in the background
-import matplotlib
-
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt
-import argparse
 import numpy as np
 import os
-
-# construct the argument parse and parse the arguments
-ap = argparse.ArgumentParser()
-ap.add_argument(
-    "-o", "--output", required=True, help="path to the output loss/accuracy plot"
-)
-args = vars(ap.parse_args())
+# set the matplotlib backend so figures can be saved in the background
+import matplotlib
+import matplotlib.pyplot as plt
+matplotlib.use("TkAgg")
 
 # show information on the process ID
-print("[INFO process ID: {}".format(os.getpid()))
+print("[INFO] process ID: {}".format(os.getpid()))
 
 __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 if not os.path.exists(os.path.join(__location__, "output")):
-    os.makedirs(os.path.join(__location__, "output``"))
+    os.makedirs(os.path.join(__location__, "output"))
+if not os.path.exists(os.path.join(__location__, "weights")):
+    os.makedirs(os.path.join(__location__, "weigths"))
 
 
 def step_decay(epoch):
@@ -124,8 +116,8 @@ labelNames = [
 ]
 
 print("[INFO] compiling model...")
-figPath = os.path.sep.join([args["output"], "{}.png".format(os.getpid())])
-jsonPath = os.path.sep.join([args["output"], "{}.json".format(os.getpid())])
+figPath = os.path.sep.join(["output", "{}.png".format(os.getpid())])
+jsonPath = os.path.sep.join(["output", "{}.json".format(os.getpid())])
 # define the set of callbacks to be passed to the model during training
 callbacks = [
     TrainingMonitor(figPath, jsonPath=jsonPath),
