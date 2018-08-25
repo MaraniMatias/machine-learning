@@ -6,13 +6,14 @@ python3 keras.py --output output/keras_miniVGG.png
 from sklearn.preprocessing import LabelBinarizer
 from sklearn.metrics import classification_report
 
-from keras.callbacks import LearningRateScheduler
+from keras.callbacks import LearningRateScheduler, ModelCheckpoint
 from keras.datasets import cifar10
 from keras import backend as K
 from keras.layers.convolutional import MaxPooling2D, Conv2D
 from keras.layers.core import Dense, Activation, Flatten, Dropout
 from keras.layers.normalization import BatchNormalization
 from keras.models import Sequential
+from keras.utils import plot_model
 from keras.optimizers import SGD, Adam
 from trainingmonitor import TrainingMonitor
 
@@ -122,20 +123,29 @@ labelNames = [
     "truck",
 ]
 
-# initialize the optimizer and model
 print("[INFO] compiling model...")
 figPath = os.path.sep.join([args["output"], "{}.png".format(os.getpid())])
 jsonPath = os.path.sep.join([args["output"], "{}.json".format(os.getpid())])
 # define the set of callbacks to be passed to the model during training
 callbacks = [
     TrainingMonitor(figPath, jsonPath=jsonPath),
-    LearningRateScheduler(step_decay)
+    LearningRateScheduler(step_decay),
+    ModelCheckpoint(
+        filepath="weights/weights.{epoch:02d}-{val_loss:.2f}.hdf5",
+        monitor='val_loss',
+        verbose=1,
+        save_weights_only=True,
+        period=1
+    )
 ]
+# initialize the optimizer and model
 opt = SGD(lr=0.01, decay=0.01 / 40, momentum=0.9, nesterov=True)
 # opt = Adam(lr=0.001, amsgrad=True)
 
 model = MiniVGGNet.build(width=32, height=32, depth=3, classes=10)
 model.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
+# save image of build model
+plot_model(model, to_file="model.png", show_shapes=True)
 
 # train the network
 print("[INFO] training network...")
