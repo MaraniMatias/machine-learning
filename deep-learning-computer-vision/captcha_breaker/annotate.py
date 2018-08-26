@@ -74,6 +74,7 @@ for (i, imagePath) in enumerate(imagePaths):
             # write the labeled character to file
             count = counts.get(key, 1)
             p = os.path.sep.join([dirPath, "{}.png".format(str(count).zfill(6))])
+            roi = cv2.cvtColor(roi, cv2.COLOR_RGB2GRAY)
             cv2.imwrite(p, roi)
             # increment the count for the current key
             counts[key] = count + 1
