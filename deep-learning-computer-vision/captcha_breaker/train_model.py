@@ -2,7 +2,7 @@
 python3 train_model.py --dataset dataset --model output/lenet.hdf5
 """
 # import the necessary packages
-from cnn import MiniVGGNet, ShallowNet
+from cnn import MiniVGGNet, ShallowNet, LeNet
 from sklearn.preprocessing import LabelBinarizer
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
@@ -28,13 +28,12 @@ labels = []
 # loop over the input images
 for imagePath in paths.list_images(args["dataset"]):
     # load the image, pre-process it, and store it in the data list
-    image = cv2.imread(imagePath)
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    image = cv2.imread(imagePath, 0)
     image = preprocess(image, 28, 28)
     image = img_to_array(image)
     data.append(image)
     # extract the class label from the image path and update the labels list
-    label = imagePath.split(os.path.sep)[2]
+    label = imagePath.split(os.path.sep)[1]
     labels.append(label)
 
 # scale the raw pixel intensities to the range [0, 1]
@@ -43,16 +42,22 @@ labels = np.array(labels)
 # partition the data into training and testing splits using 75% of
 # the data for training and the remaining 25% for testing
 (trainX, testX, trainY, testY) = train_test_split(
-    data, labels, test_size=0.25, random_state=42)
+    data,
+    labels,
+    test_size=0.25,
+    random_state=42
+)
 # convert the labels from integers to vectors
 lb = LabelBinarizer().fit(trainY)
 trainY = lb.transform(trainY)
 testY = lb.transform(testY)
 # initialize the model
 print("[INFO] compiling model...")
-model = MiniVGGNet.build(width=28, height=28, depth=1, classes=10)
+model = LeNet.build(width=28, height=28, depth=1, classes=10)
 opt = SGD(lr=0.01)
 model.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
+print("[INFO] model summary...")
+model.summary()
 # train the network
 print("[INFO] training network...")
 H = model.fit(
@@ -69,20 +74,18 @@ predictions = model.predict(testX, batch_size=32)
 print(classification_report(
     testY.argmax(axis=1),
     predictions.argmax(axis=1),
-    target_names=lb.classes_)
-)
+    target_names=lb.classes_
+))
 # save the model to disk
 print("[INFO] serializing network...")
 model.save(args["model"])
-
-
 # plot the training + testing loss and accuracy
 plt.style.use("ggplot")
 plt.figure()
-plt.plot(np.arange(0, 15), H.history["loss"], label="train_loss")
-plt.plot(np.arange(0, 15), H.history["val_loss"], label="val_loss")
-plt.plot(np.arange(0, 15), H.history["acc"], label="acc")
-plt.plot(np.arange(0, 15), H.history["val_acc"], label="val_acc")
+plt.plot(H.history["loss"], label="train_loss")
+plt.plot(H.history["val_loss"], label="val_loss")
+plt.plot(H.history["acc"], label="acc")
+plt.plot(H.history["val_acc"], label="val_acc")
 plt.title("Training Loss and Accuracy")
 plt.xlabel("Epoch #")
 plt.ylabel("Loss/Accuracy")
