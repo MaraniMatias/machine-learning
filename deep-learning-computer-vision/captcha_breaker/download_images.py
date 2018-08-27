@@ -1,5 +1,5 @@
 """
-python3 download_images.py --output downloads
+python3 download_images.py --output downloads --num-images 100
 """
 # import the necessary packages
 import argparse

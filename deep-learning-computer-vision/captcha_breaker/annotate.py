@@ -32,11 +32,10 @@ for (i, imagePath) in enumerate(imagePaths):
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         image = cv2.inRange(
             image,
-            np.array([34, 53, 80]),
-            # np.array([36, 55, 82]),
-            np.array([255, 255, 255])
+            np.array([80, 102, 133]),
+            np.array([92, 142, 209]),
+            # np.array([255, 255, 255])
         )
-        # gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
         gray = cv2.copyMakeBorder(image, 8, 8, 8, 8, cv2.BORDER_REPLICATE)
 
         # threshold the image to reveal the digits
