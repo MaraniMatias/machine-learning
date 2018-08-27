@@ -65,7 +65,7 @@ H = model.fit(
     trainY,
     validation_data=(testX, testY),
     batch_size=32,
-    epochs=15,
+    epochs=18,
     verbose=1
 )
 # evaluate the network

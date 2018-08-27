@@ -42,6 +42,7 @@ for imagePath in imagePaths:
     # threshold the image to reveal the digits
     # gray = cv2.cvtColor(gray, cv2.COLOR_RGB2GRAY)
     thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
+    thresh = cv2.bitwise_not(thresh)
     # find contours in the image, keeping only the four largest ones,
     # then sort them from left-to-right
     cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
